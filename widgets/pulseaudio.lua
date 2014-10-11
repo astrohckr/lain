@@ -28,13 +28,15 @@ local function worker(args)
     pulseaudio.widget = wibox.widget.textbox('')
 
     function pulseaudio.update()
-        local f = assert(io.popen('pamixer --get-volume'))
-        local mixer = f:read("*a")
+        local f = io.popen('pamixer --get-volume')
+        local mixer = f:read()
         f:close()
 
-        volume_now = {} 
+        volume_now = {}
 
-        volume_now.level, volume_now.status = string.match(mixer, "([%d]+)%%.*%[([%l]*)")
+        --volume_now.level, volume_now.status = string.match(mixer, "([%d]+)%%.*%[([%l]*)")
+        volume_now.status = "on"
+        volume_now.level = mixer
 
         if volume_now.level == nil
         then

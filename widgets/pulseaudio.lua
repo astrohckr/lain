@@ -32,7 +32,7 @@ local function worker(args)
         local mixer = f:read("*a")
         f:close()
 
-        volume_now = {}
+        volume_now = {} 
 
         volume_now.level, volume_now.status = string.match(mixer, "([%d]+)%%.*%[([%l]*)")
 

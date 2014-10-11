@@ -29,14 +29,16 @@ local function worker(args)
 
     function pulseaudio.update()
         local f = io.popen('pamixer --get-volume')
-        local mixer = f:read()
+        local g = io.open('pamixer --get-mute')
+        local level = f:read()
+        local status = g:read()
         f:close()
+        g:close()
 
         volume_now = {}
 
-        --volume_now.level, volume_now.status = string.match(mixer, "([%d]+)%%.*%[([%l]*)")
-        volume_now.status = "on"
-        volume_now.level = mixer
+        volume_now.status = status
+        volume_now.level = level
 
         if volume_now.level == nil
         then
@@ -44,7 +46,7 @@ local function worker(args)
             volume_now.status = "off"
         end
 
-        if volume_now.status == ""
+        if volume_now.status == "true"
         then
             if volume_now.level == "0"
             then

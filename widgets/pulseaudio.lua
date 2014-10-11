@@ -28,36 +28,32 @@ local function worker(args)
     pulseaudio.widget = wibox.widget.textbox('')
 
     function pulseaudio.update()
-        local f = io.popen('pamixer --get-volume')
-        local g = io.open('pamixer --get-mute')
-        local level = f:read()
-        local status = g:read()
-        f:close()
-        g:close()
+       local f = assert(io.popen('pamixer --get-volume'))
+       local g = assert(io.popen('pamixer --get-mute'))
+       local mixer_level = f:read()
+       local mixer_muted = g:read()
+       f:close()
+       g:close()
 
-        volume_now = {}
+       volume_now = {}
 
-        volume_now.status = status
-        volume_now.level = level
+       volume_now.level = mixer_level
 
-        if volume_now.level == nil
-        then
-            volume_now.level  = "0"
-            volume_now.status = "off"
-        end
+       if volume_now.level == nil
+       then
+          volume_now.level  = "0"
+          volume_now.status = "off"
+       end
 
-        if volume_now.status == "true"
-        then
-            if volume_now.level == "0"
-            then
-                volume_now.status = "off"
-            else
-                volume_now.status = "on"
-            end
-        end
+       if mixer_muted == "true"
+       then
+          volume_now.status = "off"
+       else
+          volume_now.status = "on"
+       end
 
-        widget = pulseaudio.widget
-        settings()
+       widget = pulseaudio.widget
+       settings()
     end
 
     newtimer("pulseaudio", timeout, pulseaudio.update)
